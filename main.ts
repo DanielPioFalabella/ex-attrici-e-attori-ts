@@ -13,24 +13,6 @@ type Actress = Person & {
     nationality: "American" | "British" | "Australian" | "Israeli-American" | "South African" | "French" | "Indian" | "Israeli" | "Spanish" | "South Korean" | "Chinese"
 }
 
-async function getActress(id: number): Promise<Actress | null>{
-    try{
-        const response = await fetch(`http://localhost:3333/acctresses/:${id}`)
-        const dati: unknown = await response.json()
-        if(!isActress(dati)) {
-            throw new Error("i dati nn sono validi")
-        }
-        return dati
-    } catch(err) {
-        if(err instanceof Error) {
-            console.error("errore durante il recupero dei dati", err)
-        } else {
-            console.error("errore sconosciuto", err)
-        }
-        return null
-    }
-}
-
 function isActress(dati: unknown): dati is Actress{
     return(
         typeof dati === "object" && dati !== null &&
@@ -49,4 +31,43 @@ function isActress(dati: unknown): dati is Actress{
         dati.nationality instanceof Array &&
         typeof dati.nationality === "string"
     )
+}
+
+// get single actress function
+async function getActress(id: number): Promise<Actress | null> {
+    try{
+        const response = await fetch(`http://localhost:3333/acctresses/:${id}`)
+        const dati: unknown = await response.json()
+        if(!isActress(dati)) {
+            throw new Error("i dati nn sono validi")
+        }
+        return dati
+    } catch(err) {
+        if(err instanceof Error) {
+            console.error("errore durante il recupero dei dati", err)
+        } else {
+            console.error("errore sconosciuto", err)
+        }
+        return null
+    }
+}
+
+// get all actesses
+async function getAllActress(): Promise<Actress[]> {
+    try{
+        const response = await fetch(`http://localhost:3333/acctresses`)
+        const dati: unknown = await response.json()
+        if(!(dati instanceof Array)) {
+            throw new Error("formato dei dati non valido")
+        } 
+        const validActress: Actress[] = dati.filter(a => isActress(a))
+        return validActress
+    } catch(err) {
+        if(err instanceof Error) {
+            console.error("errore durante il recupero dei dati", err)
+        } else {
+            console.error("errore sconosciuto", err)
+        }
+        return []
+    }
 }
