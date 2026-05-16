@@ -52,7 +52,7 @@ async function getActress(id: number): Promise<Actress | null> {
     }
 }
 
-// get all actesses
+// get all actesses function
 async function getAllActress(): Promise<Actress[]> {
     try{
         const response = await fetch(`http://localhost:3333/acctresses`)
@@ -62,6 +62,22 @@ async function getAllActress(): Promise<Actress[]> {
         } 
         const validActress: Actress[] = dati.filter(a => isActress(a))
         return validActress
+    } catch(err) {
+        if(err instanceof Error) {
+            console.error("errore durante il recupero dei dati", err)
+        } else {
+            console.error("errore sconosciuto", err)
+        }
+        return []
+    }
+}
+
+// get Actresses function
+async function getActresses(ids: number[]): Promise<(Actress | null) []> {
+    try{
+        const promises = ids.map(id => getActress(id))
+        const actresses = await Promise.all(promises)
+        return actresses
     } catch(err) {
         if(err instanceof Error) {
             console.error("errore durante il recupero dei dati", err)
